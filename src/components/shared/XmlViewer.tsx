@@ -1,0 +1,72 @@
+import { useState } from 'react'
+import { Button } from '../ui/Button'
+
+function formatXml(xml: string): string {
+  let formatted = ''
+  let depth = 0
+  const indent = '  '
+
+  const nodes = xml.replace(/(>)(<)(\/?)/g, '$1\n$2$3').split('\n')
+  for (const node of nodes) {
+    const trimmed = node.trim()
+    if (!trimmed) continue
+
+    if (trimmed.startsWith('</')) {
+      depth--
+    }
+    formatted += indent.repeat(Math.max(0, depth)) + trimmed + '\n'
+    if (
+      !trimmed.startsWith('</') &&
+      !trimmed.endsWith('/>') &&
+      !trimmed.startsWith('<?') &&
+      !trimmed.startsWith('<!') &&
+      /^<[^/!?]/.test(trimmed) &&
+      !trimmed.includes('</')
+    ) {
+      depth++
+    }
+  }
+
+  return formatted.trim()
+}
+
+interface XmlViewerProps {
+  data: string
+  title?: string
+  defaultCollapsed?: boolean
+}
+
+export function XmlViewer({ data, title, defaultCollapsed = false }: XmlViewerProps) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed)
+  const [copied, setCopied] = useState(false)
+
+  const pretty = formatXml(data)
+
+  async function copy() {
+    await navigator.clipboard.writeText(pretty)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <div className="rounded-lg border border-gray-200 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+        >
+          <span className={`transition-transform ${collapsed ? '' : 'rotate-90'}`}>▶</span>
+          {title ?? 'XML'}
+        </button>
+        <Button variant="ghost" size="sm" onClick={copy}>
+          {copied ? 'Copied!' : 'Copy'}
+        </Button>
+      </div>
+      {!collapsed && (
+        <pre className="p-4 text-xs text-gray-800 bg-gray-50 overflow-auto max-h-96 font-mono">
+          {pretty}
+        </pre>
+      )}
+    </div>
+  )
+}
