@@ -102,11 +102,11 @@ export function SettingsPage() {
             ].map(({ label, url }) => (
               <div
                 key={url}
-                className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50"
+                className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{label}</p>
-                  <p className="text-xs font-mono text-gray-500">{url}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{label}</p>
+                  <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{url}</p>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => handleChange('baseUrl', url)}>
                   Use

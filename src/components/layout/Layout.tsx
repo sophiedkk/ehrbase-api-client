@@ -7,7 +7,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
       <Sidebar />
       <main className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto px-6 py-8">{children}</div>
@@ -19,8 +19,8 @@ export function Layout({ children }: LayoutProps) {
 export function PageHeader({ title, description }: { title: string; description?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-      {description && <p className="mt-1 text-sm text-gray-500">{description}</p>}
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+      {description && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>}
     </div>
   )
 }

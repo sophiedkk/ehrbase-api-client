@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useActiveEHR } from '../../context/ActiveEHRContext'
 import { useActiveComposition } from '../../context/ActiveCompositionContext'
+import { useTheme } from '../../context/ThemeContext'
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '⊞' },
@@ -15,6 +16,7 @@ const navItems = [
 export function Sidebar() {
   const { activeEHR, setActiveEHR } = useActiveEHR()
   const { activeComposition, setActiveComposition } = useActiveComposition()
+  const { theme, toggleTheme } = useTheme()
   const ehrId = activeEHR?.ehr_id?.value
   const compositionId = activeComposition?.compositionId
   const [copiedEhr, setCopiedEhr] = useState(false)
@@ -150,9 +152,16 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="px-3 py-2 border-t border-gray-700 mt-auto shrink-0">
+      {/* Footer with theme toggle */}
+      <div className="px-3 py-2 border-t border-gray-700 mt-auto shrink-0 flex items-center justify-between">
         <p className="text-gray-600 text-xs">openEHR REST API v1</p>
+        <button
+          onClick={toggleTheme}
+          className="text-gray-500 hover:text-gray-300 transition-colors text-sm"
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
       </div>
     </aside>
   )

@@ -96,12 +96,12 @@ export function TemplatePage() {
             <CardTitle>Upload OPT Template</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col flex-1 gap-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Upload an Operational Template (OPT) XML file to register it with EHRBase.
             </p>
 
             <div
-              className="flex-1 border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-blue-300 transition-colors cursor-pointer"
+              className="flex-1 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-blue-300 transition-colors cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
               <input
@@ -113,15 +113,15 @@ export function TemplatePage() {
               />
               {selectedFile ? (
                 <div>
-                  <p className="text-sm font-medium text-gray-900">📄 {selectedFile.name}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">📄 {selectedFile.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {(selectedFile.size / 1024).toFixed(1)} KB
                   </p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-sm text-gray-500">Click to select an OPT file</p>
-                  <p className="text-xs text-gray-400 mt-1">or drag and drop (.opt, .xml)</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Click to select an OPT file</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">or drag and drop (.opt, .xml)</p>
                 </div>
               )}
             </div>
@@ -159,27 +159,27 @@ export function TemplatePage() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {isLoading && <div className="px-6 py-4 text-sm text-gray-500">Loading…</div>}
+            {isLoading && <div className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">Loading…</div>}
             {isError && (
               <div className="px-6 py-4">
                 <Alert variant="error">{formatError(error)}</Alert>
               </div>
             )}
             {templates?.length === 0 && (
-              <div className="px-6 py-4 text-sm text-gray-500">No templates found.</div>
+              <div className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">No templates found.</div>
             )}
             {templates && templates.length > 0 && (
-              <ul className="divide-y divide-gray-100 overflow-y-auto max-h-[26rem]">
+              <ul className="divide-y divide-gray-100 dark:divide-gray-700 overflow-y-auto max-h-[26rem]">
                 {templates.map((t) => (
                   <li
                     key={t.template_id}
-                    className={`px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                      selectedTemplate?.template_id === t.template_id ? 'bg-blue-50' : ''
+                    className={`px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
+                      selectedTemplate?.template_id === t.template_id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                     }`}
                     onClick={() => handleSelectTemplate(t)}
                   >
-                    <p className="text-sm font-medium text-gray-900 truncate">{t.template_id}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{t.concept}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{t.template_id}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t.concept}</p>
                   </li>
                 ))}
               </ul>
@@ -207,24 +207,24 @@ export function TemplatePage() {
           <CardContent className="space-y-5">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-500 text-xs font-medium uppercase mb-1">Concept</p>
-                <p className="text-gray-900">{selectedTemplate.concept}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase mb-1">Concept</p>
+                <p className="text-gray-900 dark:text-gray-100">{selectedTemplate.concept}</p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs font-medium uppercase mb-1">Archetype ID</p>
-                <p className="font-mono text-xs text-gray-700 break-all">
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase mb-1">Archetype ID</p>
+                <p className="font-mono text-xs text-gray-700 dark:text-gray-300 break-all">
                   {selectedTemplate.archetype_id}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs font-medium uppercase mb-1">Created</p>
-                <p className="text-gray-700">{selectedTemplate.created_timestamp}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase mb-1">Created</p>
+                <p className="text-gray-700 dark:text-gray-300">{selectedTemplate.created_timestamp}</p>
               </div>
             </div>
 
             {/* Format selector */}
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase mb-2">Generate Example</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Generate Example</p>
               <div className="flex flex-wrap gap-2">
                 {EXAMPLE_FORMATS.map((fmt) => {
                   const isActive = exampleResult?.format === fmt.label
@@ -245,7 +245,7 @@ export function TemplatePage() {
                         'disabled:opacity-50 disabled:cursor-not-allowed',
                         isActive
                           ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600',
                       ].join(' ')}
                     >
                       {isLoading ? '…' : fmt.label}

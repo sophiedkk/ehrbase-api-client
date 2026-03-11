@@ -33,11 +33,11 @@ export function Dashboard() {
       {/* Server status */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <Link to="/settings" className="block h-full">
-          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer">
+          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
             <CardContent className="flex items-center gap-4 py-5">
               <div className="flex-1">
-                <p className="text-sm text-gray-500">Server Status</p>
-                <p className="text-lg font-semibold text-gray-900 capitalize">{serverStatus}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Server Status</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 capitalize">{serverStatus}</p>
               </div>
               <Badge
                 variant={
@@ -55,11 +55,11 @@ export function Dashboard() {
         </Link>
 
         <Link to="/templates" className="block h-full">
-          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer">
+          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
             <CardContent className="flex items-center gap-4 py-5">
               <div className="flex-1">
-                <p className="text-sm text-gray-500">Templates</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Templates</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {isLoading ? '…' : (templates?.length ?? 0)}
                 </p>
               </div>
@@ -69,11 +69,11 @@ export function Dashboard() {
         </Link>
 
         <Link to="/settings" className="block h-full">
-          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer">
+          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
             <CardContent className="flex items-center gap-4 py-5">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-500">Server URL</p>
-                <p className="text-xs font-mono text-gray-700 truncate">{config.baseUrl}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Server URL</p>
+                <p className="text-xs font-mono text-gray-700 dark:text-gray-300 truncate">{config.baseUrl}</p>
               </div>
               <span className="text-2xl shrink-0">🔗</span>
             </CardContent>
@@ -105,10 +105,10 @@ export function Dashboard() {
               },
             ].map(({ to, icon, label, desc }) => (
               <Link key={label} to={to}>
-                <div className="p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer">
+                <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
                   <div className="text-2xl mb-2">{icon}</div>
-                  <p className="font-medium text-sm text-gray-900">{label}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                  <p className="font-medium text-sm text-gray-900 dark:text-gray-100">{label}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{desc}</p>
                 </div>
               </Link>
             ))}
@@ -124,20 +124,20 @@ export function Dashboard() {
           </CardHeader>
           <CardContent className="p-0">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                     Template ID
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                     Concept
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                     Created
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {[...templates]
                   .sort(
                     (a, b) =>
@@ -146,10 +146,10 @@ export function Dashboard() {
                   )
                   .slice(0, 5)
                   .map((t) => (
-                    <tr key={t.template_id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 font-mono text-xs text-blue-700">{t.template_id}</td>
-                      <td className="px-6 py-3 text-gray-700">{t.concept}</td>
-                      <td className="px-6 py-3 text-gray-500 text-xs">{t.created_timestamp}</td>
+                    <tr key={t.template_id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                      <td className="px-6 py-3 font-mono text-xs text-blue-700 dark:text-blue-400">{t.template_id}</td>
+                      <td className="px-6 py-3 text-gray-700 dark:text-gray-300">{t.concept}</td>
+                      <td className="px-6 py-3 text-gray-500 dark:text-gray-400 text-xs">{t.created_timestamp}</td>
                     </tr>
                   ))}
               </tbody>

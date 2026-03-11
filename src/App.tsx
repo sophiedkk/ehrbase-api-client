@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from './context/ThemeContext'
 import { ServerConfigProvider } from './context/ServerConfigContext'
 import { ActiveEHRProvider } from './context/ActiveEHRContext'
 import { ActiveCompositionProvider } from './context/ActiveCompositionContext'
@@ -22,25 +23,27 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ServerConfigProvider>
-        <ActiveEHRProvider>
-          <ActiveCompositionProvider>
-            <BrowserRouter>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/ehr" element={<EHRPage />} />
-                  <Route path="/templates" element={<TemplatePage />} />
-                  <Route path="/compositions" element={<CompositionPage />} />
-                  <Route path="/aql" element={<AqlPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                </Routes>
-              </Layout>
-            </BrowserRouter>
-          </ActiveCompositionProvider>
-        </ActiveEHRProvider>
-      </ServerConfigProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ServerConfigProvider>
+          <ActiveEHRProvider>
+            <ActiveCompositionProvider>
+              <BrowserRouter>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/ehr" element={<EHRPage />} />
+                    <Route path="/templates" element={<TemplatePage />} />
+                    <Route path="/compositions" element={<CompositionPage />} />
+                    <Route path="/aql" element={<AqlPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                  </Routes>
+                </Layout>
+              </BrowserRouter>
+            </ActiveCompositionProvider>
+          </ActiveEHRProvider>
+        </ServerConfigProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }

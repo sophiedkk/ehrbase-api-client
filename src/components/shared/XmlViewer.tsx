@@ -49,11 +49,11 @@ export function XmlViewer({ data, title, defaultCollapsed = false }: XmlViewerPr
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
+    <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
         <button
           onClick={() => setCollapsed((c) => !c)}
-          className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
         >
           <span className={`transition-transform ${collapsed ? '' : 'rotate-90'}`}>▶</span>
           {title ?? 'XML'}
@@ -63,7 +63,7 @@ export function XmlViewer({ data, title, defaultCollapsed = false }: XmlViewerPr
         </Button>
       </div>
       {!collapsed && (
-        <pre className="p-4 text-xs text-gray-800 bg-gray-50 overflow-auto max-h-96 font-mono">
+        <pre className="p-4 text-xs text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/50 overflow-auto max-h-96 font-mono">
           {pretty}
         </pre>
       )}

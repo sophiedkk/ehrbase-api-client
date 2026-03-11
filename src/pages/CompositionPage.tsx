@@ -45,7 +45,7 @@ function FormatSelector({
             'px-3 py-1 rounded-lg text-sm font-medium border transition-colors',
             f.id === value.id
               ? 'bg-blue-600 text-white border-blue-600'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600',
           ].join(' ')}
         >
           {f.label}
@@ -175,7 +175,7 @@ export function CompositionPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase mb-2">Format</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Format</p>
               <FormatSelector value={postFormat} onChange={handleFormatChange} />
             </div>
 
@@ -187,12 +187,12 @@ export function CompositionPage() {
                 onChange={(e) => setPostEhrId(e.target.value)}
               />
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Load from Template Example
                 </label>
                 <div className="flex gap-2 min-w-0">
                   <select
-                    className="flex-1 min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 truncate"
+                    className="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 truncate"
                     value={exampleTemplateId}
                     onChange={(e) => setExampleTemplateId(e.target.value)}
                   >
@@ -217,17 +217,19 @@ export function CompositionPage() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Composition ({postFormat.label})
-                {bodyError && <span className="ml-2 text-xs text-red-600">{bodyError}</span>}
+                {bodyError && <span className="ml-2 text-xs text-red-600 dark:text-red-400">{bodyError}</span>}
               </label>
               <textarea
                 rows={12}
                 spellCheck={false}
                 className={[
-                  'block w-full rounded-lg border px-3 py-2 text-xs font-mono text-gray-900',
+                  'block w-full rounded-lg border px-3 py-2 text-xs font-mono text-gray-900 dark:text-gray-100',
                   'focus:outline-none focus:ring-2 focus:ring-blue-500',
-                  bodyError ? 'border-red-400 bg-red-50' : 'border-gray-300 bg-white',
+                  bodyError
+                    ? 'border-red-400 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700',
                 ].join(' ')}
                 placeholder={
                   postFormat.editorType === 'xml'
@@ -262,9 +264,9 @@ export function CompositionPage() {
             {postResult && (
               <div className="space-y-3">
                 <Alert variant="success">Composition posted and set as active.</Alert>
-                <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                  <p className="text-xs text-purple-600 font-medium mb-1">Composition ID</p>
-                  <p className="font-mono text-sm text-purple-900 break-all font-semibold">
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800">
+                  <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mb-1">Composition ID</p>
+                  <p className="font-mono text-sm text-purple-900 dark:text-purple-200 break-all font-semibold">
                     {postResult.compositionId}
                   </p>
                 </div>
@@ -291,7 +293,7 @@ export function CompositionPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase mb-2">Format</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Format</p>
                 <FormatSelector
                   value={getFormat}
                   onChange={(f) => {
@@ -369,26 +371,26 @@ export function CompositionPage() {
               {rows.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Results</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Results</span>
                     <Badge variant="blue">{rows.length}</Badge>
                   </div>
-                  <div className="divide-y divide-gray-100 rounded-lg border border-gray-200 overflow-hidden max-h-80 overflow-y-auto">
+                  <div className="divide-y divide-gray-100 dark:divide-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden max-h-80 overflow-y-auto">
                     {rows.map((row: unknown, i) => {
                       const r = row as string[]
                       const uid = r[0]
                       return (
                         <div
                           key={i}
-                          className="px-4 py-3 text-sm hover:bg-gray-50 cursor-pointer"
+                          className="px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
                           onClick={() => {
                             setGetCompositionId(uid)
                             setGetEhrId(listEhrId.trim())
                             setActiveComposition({ compositionId: uid, ehrId: listEhrId.trim() })
                           }}
                         >
-                          <p className="font-mono text-xs text-purple-700 break-all">{uid}</p>
-                          {r[1] && <p className="text-gray-700 mt-0.5">{r[1]}</p>}
-                          {r[2] && <p className="text-gray-500 text-xs mt-0.5">{r[2]}</p>}
+                          <p className="font-mono text-xs text-purple-700 dark:text-purple-400 break-all">{uid}</p>
+                          {r[1] && <p className="text-gray-700 dark:text-gray-300 mt-0.5">{r[1]}</p>}
+                          {r[2] && <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">{r[2]}</p>}
                         </div>
                       )
                     })}

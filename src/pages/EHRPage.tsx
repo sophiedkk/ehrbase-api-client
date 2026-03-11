@@ -68,19 +68,19 @@ export function EHRPage() {
       />
 
       {/* Active EHR banner */}
-      <Card className="mb-6 border-2 border-blue-200 bg-blue-50">
+      <Card className="mb-6 border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
         <CardContent className="py-4">
           <div className="flex items-center gap-4">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-blue-500 uppercase tracking-wide mb-1">
+              <p className="text-xs font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wide mb-1">
                 Active EHR
               </p>
               {activeEHR ? (
-                <p className="font-mono text-sm text-blue-900 break-all font-semibold">
+                <p className="font-mono text-sm text-blue-900 dark:text-blue-100 break-all font-semibold">
                   {activeEHR.ehr_id?.value}
                 </p>
               ) : (
-                <p className="text-sm text-blue-400 italic">
+                <p className="text-sm text-blue-400 dark:text-blue-500 italic">
                   No EHR selected — create one or look one up below.
                 </p>
               )}
@@ -120,7 +120,7 @@ export function EHRPage() {
                 value={subjectNamespace}
                 onChange={(e) => setSubjectNamespace(e.target.value)}
               />
-              <div className="space-y-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5">
+              <div className="space-y-2 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 px-3 py-2.5">
                 <Toggle label="Queryable" checked={isQueryable} onChange={setIsQueryable} />
                 <Toggle label="Modifiable" checked={isModifiable} onChange={setIsModifiable} />
               </div>
@@ -225,40 +225,40 @@ export function EHRPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase mb-1">EHR ID</p>
-                    <p className="font-mono text-gray-900 break-all">{activeEHR.ehr_id?.value}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">EHR ID</p>
+                    <p className="font-mono text-gray-900 dark:text-gray-100 break-all">{activeEHR.ehr_id?.value}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase mb-1">System ID</p>
-                    <p className="font-mono text-gray-700">{activeEHR.system_id?.value ?? '—'}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">System ID</p>
+                    <p className="font-mono text-gray-700 dark:text-gray-300">{activeEHR.system_id?.value ?? '—'}</p>
                   </div>
                   {subjectRef && (
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase mb-1">Subject</p>
-                      <p className="text-gray-900">{subjectRef.id?.value}</p>
-                      <p className="text-gray-500 text-xs">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Subject</p>
+                      <p className="text-gray-900 dark:text-gray-100">{subjectRef.id?.value}</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs">
                         {subjectRef.namespace} · {subjectRef.type}
                       </p>
                     </div>
                   )}
                   <div className="flex gap-6">
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase mb-1">Queryable</p>
-                      <p className="text-gray-900">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Queryable</p>
+                      <p className="text-gray-900 dark:text-gray-100">
                         {activeEHR.ehr_status?.is_queryable ? 'Yes' : 'No'}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase mb-1">Modifiable</p>
-                      <p className="text-gray-900">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Modifiable</p>
+                      <p className="text-gray-900 dark:text-gray-100">
                         {activeEHR.ehr_status?.is_modifiable ? 'Yes' : 'No'}
                       </p>
                     </div>
                   </div>
                   {activeEHR.time_created && (
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase mb-1">Created</p>
-                      <p className="text-gray-700">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Created</p>
+                      <p className="text-gray-700 dark:text-gray-300">
                         {String(activeEHR.time_created?.value ?? activeEHR.time_created)}
                       </p>
                     </div>
@@ -268,8 +268,8 @@ export function EHRPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-dashed">
-              <CardContent className="py-8 text-center text-gray-400">
+            <Card className="border-dashed dark:border-gray-700">
+              <CardContent className="py-8 text-center text-gray-400 dark:text-gray-500">
                 <p className="text-3xl mb-3">👤</p>
                 <p className="text-sm">EHR details will appear here once one is selected.</p>
               </CardContent>
@@ -296,7 +296,7 @@ export function EHRPage() {
             </CardHeader>
             <CardContent className="p-0">
               {!listMutation.data && !listMutation.isPending && (
-                <p className="px-4 py-3 text-sm text-gray-400 italic">
+                <p className="px-4 py-3 text-sm text-gray-400 dark:text-gray-500 italic">
                   Click Refresh to load EHRs.
                 </p>
               )}
@@ -306,24 +306,24 @@ export function EHRPage() {
                 </div>
               )}
               {listMutation.data?.length === 0 && (
-                <p className="px-4 py-3 text-sm text-gray-500">No EHRs found.</p>
+                <p className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">No EHRs found.</p>
               )}
               {listMutation.data && listMutation.data.length > 0 && (
-                <ul className="divide-y divide-gray-100 overflow-y-auto max-h-72">
+                <ul className="divide-y divide-gray-100 dark:divide-gray-700 overflow-y-auto max-h-72">
                   {listMutation.data.map((e: EHRSummary) => (
                     <li
                       key={e.ehrId}
-                      className={`px-4 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors ${activeEHR?.ehr_id?.value === e.ehrId ? 'bg-blue-50' : ''}`}
+                      className={`px-4 py-2.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${activeEHR?.ehr_id?.value === e.ehrId ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                       onClick={() => getEHR(client, e.ehrId).then(setActiveEHR)}
                     >
-                      <p className="font-mono text-xs text-blue-700 break-all">{e.ehrId}</p>
+                      <p className="font-mono text-xs text-blue-700 dark:text-blue-400 break-all">{e.ehrId}</p>
                       {e.subjectId && (
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                           {e.subjectId} · {e.subjectNamespace}
                         </p>
                       )}
                       {e.timeCreated && (
-                        <p className="text-xs text-gray-400 mt-0.5">{e.timeCreated}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{e.timeCreated}</p>
                       )}
                     </li>
                   ))}
