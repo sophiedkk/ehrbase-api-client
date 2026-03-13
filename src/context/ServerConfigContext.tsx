@@ -2,7 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { ServerConfig } from '../types/openehr'
 
 const DEFAULT_CONFIG: ServerConfig = {
-  baseUrl: 'http://localhost:8080/ehrbase/rest/openehr/v1',
+  baseUrl: 'https://sandbox.ehrbase.org/ehrbase/rest/openehr/v1',
   username: 'ehrbase-user',
   password: 'SuperSecretPassword1!',
 }
