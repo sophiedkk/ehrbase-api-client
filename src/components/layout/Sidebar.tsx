@@ -13,7 +13,12 @@ const navItems = [
   { to: '/settings', label: 'Settings', icon: '⚙' },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { activeEHR, setActiveEHR } = useActiveEHR()
   const { activeComposition, setActiveComposition } = useActiveComposition()
   const { theme, toggleTheme } = useTheme()
@@ -36,10 +41,14 @@ export function Sidebar() {
     setTimeout(() => setCopiedComp(false), 1500)
   }
 
-  return (
-    <aside className="w-48 shrink-0 bg-gray-900 h-screen sticky top-0 flex flex-col overflow-y-auto">
+  const content = (
+    <aside className="w-64 lg:w-48 shrink-0 bg-gray-900 h-full flex flex-col overflow-y-auto">
       {/* Logo */}
-      <NavLink to="/" className="px-3 py-3 border-b border-gray-700 shrink-0 flex items-center gap-2 hover:bg-gray-800 transition-colors">
+      <NavLink
+        to="/"
+        onClick={onClose}
+        className="px-3 py-3 border-b border-gray-700 shrink-0 flex items-center gap-2 hover:bg-gray-800 transition-colors"
+      >
         <span className="text-xl">🏥</span>
         <div>
           <p className="text-white font-semibold text-sm leading-tight">EHRBase</p>
@@ -54,6 +63,7 @@ export function Sidebar() {
             key={to}
             to={to}
             end={to === '/'}
+            onClick={onClose}
             className={({ isActive }) =>
               [
                 'flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors',
@@ -69,7 +79,6 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Spacer pushes active indicators to the bottom */}
       <div className="flex-1" />
 
       {/* Active EHR */}
@@ -87,10 +96,7 @@ export function Sidebar() {
                   {copiedEhr ? '✓' : '⎘'}
                 </span>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setActiveEHR(null)
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setActiveEHR(null) }}
                   className="text-gray-600 hover:text-gray-400 text-xs leading-none"
                   title="Clear active EHR"
                 >
@@ -100,9 +106,7 @@ export function Sidebar() {
             )}
           </div>
           {ehrId ? (
-            <p
-              className={`font-mono text-xs break-all leading-relaxed transition-colors ${copiedEhr ? 'text-green-300' : 'text-green-400 group-hover:text-green-300'}`}
-            >
+            <p className={`font-mono text-xs break-all leading-relaxed transition-colors ${copiedEhr ? 'text-green-300' : 'text-green-400 group-hover:text-green-300'}`}>
               {copiedEhr ? 'Copied!' : ehrId}
             </p>
           ) : (
@@ -111,14 +115,12 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Active Composition indicator */}
+      {/* Active Composition */}
       <div className="px-2 pb-2 shrink-0">
         <div
           className={`rounded-lg px-2.5 py-2 ${compositionId ? 'bg-gray-800 cursor-pointer group' : 'bg-gray-800/40'}`}
           onClick={compositionId ? copyCompositionId : undefined}
-          title={
-            compositionId ? (copiedComp ? 'Copied!' : 'Click to copy Composition ID') : undefined
-          }
+          title={compositionId ? (copiedComp ? 'Copied!' : 'Click to copy Composition ID') : undefined}
         >
           <div className="flex items-center justify-between mb-1">
             <p className="text-xs font-medium text-gray-400">Active Composition</p>
@@ -128,10 +130,7 @@ export function Sidebar() {
                   {copiedComp ? '✓' : '⎘'}
                 </span>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setActiveComposition(null)
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setActiveComposition(null) }}
                   className="text-gray-600 hover:text-gray-400 text-xs leading-none"
                   title="Clear active composition"
                 >
@@ -141,9 +140,7 @@ export function Sidebar() {
             )}
           </div>
           {compositionId ? (
-            <p
-              className={`font-mono text-xs break-all leading-relaxed transition-colors ${copiedComp ? 'text-purple-300' : 'text-purple-400 group-hover:text-purple-300'}`}
-            >
+            <p className={`font-mono text-xs break-all leading-relaxed transition-colors ${copiedComp ? 'text-purple-300' : 'text-purple-400 group-hover:text-purple-300'}`}>
               {copiedComp ? 'Copied!' : compositionId}
             </p>
           ) : (
@@ -152,7 +149,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Footer with theme toggle */}
+      {/* Footer */}
       <div className="px-3 py-2 border-t border-gray-700 mt-auto shrink-0 flex items-center justify-between">
         <p className="text-gray-600 text-xs">openEHR REST API v1</p>
         <button
@@ -164,5 +161,26 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+  )
+
+  return (
+    <>
+      {/* Desktop: sticky sidebar */}
+      <div className="hidden lg:block h-screen sticky top-0 shrink-0">
+        {content}
+      </div>
+
+      {/* Mobile: slide-in drawer */}
+      <div
+        className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-200 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+        <div className={`absolute inset-y-0 left-0 transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          {content}
+        </div>
+      </div>
+    </>
   )
 }
