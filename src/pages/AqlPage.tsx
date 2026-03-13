@@ -10,6 +10,7 @@ import { AqlEditor } from '../components/shared/AqlEditor'
 import { useServerConfig } from '../context/ServerConfigContext'
 import { useActiveEHR } from '../context/ActiveEHRContext'
 import { createApiClient, formatError } from '../api/client'
+import { formatTimestamp } from '../utils/date'
 import { runAql, type AqlResult } from '../api/aql'
 import {
   listStoredQueries,
@@ -43,6 +44,51 @@ ORDER BY c/context/start_time DESC`,
 FROM EHR e
 CONTAINS COMPOSITION c
 LIMIT 20`,
+  },
+  {
+    label: 'Compositions by template',
+    q: `SELECT e/ehr_id/value AS ehr_id,
+       c/uid/value AS uid,
+       c/context/start_time/value AS start_time
+FROM EHR e
+CONTAINS COMPOSITION c[openEHR-EHR-COMPOSITION.encounter.v1]
+ORDER BY c/context/start_time DESC
+LIMIT 20`,
+  },
+  {
+    label: 'Observations in active EHR',
+    q: `SELECT o/name/value AS observation,
+       o/data[at0001]/events[at0006]/data[at0003]/items/value AS value,
+       o/data[at0001]/events[at0006]/time/value AS time
+FROM EHR e[ehr_id/value='{EHR_ID}']
+CONTAINS COMPOSITION c
+CONTAINS OBSERVATION o
+ORDER BY o/data[at0001]/events[at0006]/time DESC
+LIMIT 20`,
+  },
+  {
+    label: 'EHR count',
+    q: `SELECT COUNT(e/ehr_id/value) AS total
+FROM EHR e`,
+  },
+  {
+    label: 'Composition count for active EHR',
+    q: `SELECT COUNT(c/uid/value) AS composition_count
+FROM EHR e[ehr_id/value='{EHR_ID}']
+CONTAINS COMPOSITION c`,
+  },
+  {
+    label: 'Compositions in date range',
+    q: `SELECT e/ehr_id/value AS ehr_id,
+       c/uid/value AS uid,
+       c/name/value AS name,
+       c/context/start_time/value AS start_time
+FROM EHR e
+CONTAINS COMPOSITION c
+WHERE c/context/start_time/value >= '2024-01-01T00:00:00'
+  AND c/context/start_time/value <  '2025-01-01T00:00:00'
+ORDER BY c/context/start_time DESC
+LIMIT 50`,
   },
 ]
 
@@ -391,7 +437,7 @@ export function AqlPage() {
                                   </span>
                                   {v.saved && (
                                     <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
-                                      {new Date(v.saved).toLocaleString()}
+                                      {formatTimestamp(v.saved)}
                                     </p>
                                   )}
                                 </div>

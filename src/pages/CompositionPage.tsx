@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { PageHeader } from '../components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
@@ -76,6 +76,13 @@ export function CompositionPage() {
 
   const [getEhrId, setGetEhrId] = useState(activeEhrId)
   const [getCompositionId, setGetCompositionId] = useState(activeComposition?.compositionId ?? '')
+
+  useEffect(() => {
+    if (activeComposition?.compositionId) {
+      setGetCompositionId(activeComposition.compositionId)
+      setGetEhrId(activeComposition.ehrId)
+    }
+  }, [activeComposition])
   const [fetchedComposition, setFetchedComposition] = useState<{
     data: unknown
     type: 'json' | 'xml'

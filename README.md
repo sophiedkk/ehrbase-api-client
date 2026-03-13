@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# EHRBase Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based client for [EHRBase](https://ehrbase.org), an open-source openEHR Clinical Data Repository. Manage EHRs, templates, and compositions, and run AQL queries — all from your browser.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **EHR Management** — create EHRs, look them up by ID or subject, browse all EHRs on the server
+- **Template Management** — upload OPT files, list templates, generate example compositions from a template
+- **Composition Management** — post compositions in JSON, STRUCTURED, FLAT, or XML format; retrieve and list compositions per EHR
+- **AQL Queries** — run Archetype Query Language queries with a built-in editor, view tabular results, and save/version queries on the server
+- **Active context** — the selected EHR and composition are remembered across pages and persisted in `localStorage`
+- **Dark mode** — system preference is detected automatically, with a manual toggle
+- **Configurable server** — point the client at any EHRBase instance via the Settings page
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18+
+- A running EHRBase instance (see [EHRBase Docker quickstart](https://ehrbase.org/get-started))
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Install and run
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:5173](http://localhost:5173). The dev server proxies `/ehrbase` to `http://localhost:8080` by default, matching a standard local EHRBase Docker setup.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Configure the server
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Go to **Settings** and enter your EHRBase base URL, username, and password. Use **Test Connection** to verify. Settings are saved in `localStorage`.
+
+Common URLs:
+
+| Setup | URL |
+|---|---|
+| Default Docker | `http://localhost:8080/ehrbase/rest/openehr/v1` |
+| EHRBase Cloud sandbox | `https://sandbox.ehrbase.org/ehrbase/rest/openehr/v1` |
+
+## Deployment
+
+### Build
+
+```bash
+npm run build
+# output in dist/
 ```
+
+Serve the `dist/` directory from any static host (Nginx, Caddy, S3, Netlify, Vercel, etc.).
+
+> **CORS:** the browser makes requests directly to your EHRBase server, so EHRBase must allow your hosting origin. Set `CORS_ALLOWED_ORIGINS` in your EHRBase configuration accordingly.
+
+### GitHub Pages
+
+Push to `main` and the included GitHub Actions workflow (`.github/workflows/deploy.yml`) will build and deploy automatically. Enable GitHub Pages in your repository settings under **Settings → Pages → Source: GitHub Actions**.
+
+## Tech stack
+
+| | |
+|---|---|
+| Framework | React 19 + TypeScript |
+| Build | Vite |
+| Styling | Tailwind CSS v4 |
+| Data fetching | TanStack Query v5 |
+| HTTP | Axios |
+| Routing | React Router v7 |

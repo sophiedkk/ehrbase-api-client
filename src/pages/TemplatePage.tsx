@@ -9,6 +9,7 @@ import { JsonViewer } from '../components/shared/JsonViewer'
 import { XmlViewer } from '../components/shared/XmlViewer'
 import { useServerConfig } from '../context/ServerConfigContext'
 import { createApiClient, formatError } from '../api/client'
+import { formatTimestamp } from '../utils/date'
 import {
   listTemplates,
   uploadTemplate,
@@ -218,7 +219,7 @@ export function TemplatePage() {
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase mb-1">Created</p>
-                <p className="text-gray-700 dark:text-gray-300">{selectedTemplate.created_timestamp}</p>
+                <p className="text-gray-700 dark:text-gray-300">{formatTimestamp(selectedTemplate.created_timestamp)}</p>
               </div>
             </div>
 

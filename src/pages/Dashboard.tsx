@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/Badge'
 import { useServerConfig } from '../context/ServerConfigContext'
 import { createApiClient } from '../api/client'
 import { listTemplates } from '../api/template'
+import { formatTimestamp } from '../utils/date'
 
 export function Dashboard() {
   const { config } = useServerConfig()
@@ -149,7 +150,7 @@ export function Dashboard() {
                     <tr key={t.template_id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="px-6 py-3 font-mono text-xs text-blue-700 dark:text-blue-400">{t.template_id}</td>
                       <td className="px-6 py-3 text-gray-700 dark:text-gray-300">{t.concept}</td>
-                      <td className="px-6 py-3 text-gray-500 dark:text-gray-400 text-xs">{t.created_timestamp}</td>
+                      <td className="px-6 py-3 text-gray-500 dark:text-gray-400 text-xs">{formatTimestamp(t.created_timestamp)}</td>
                     </tr>
                   ))}
               </tbody>

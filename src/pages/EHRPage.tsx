@@ -13,6 +13,7 @@ import { useActiveEHR } from '../context/ActiveEHRContext'
 import { createApiClient, formatError } from '../api/client'
 import { createEHR, getEHR, getEHRBySubjectId, listEHRs } from '../api/ehr'
 import type { EHRSummary } from '../api/ehr'
+import { formatTimestamp } from '../utils/date'
 
 export function EHRPage() {
   const { config } = useServerConfig()
@@ -259,7 +260,7 @@ export function EHRPage() {
                     <div>
                       <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Created</p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        {String(activeEHR.time_created?.value ?? activeEHR.time_created)}
+                        {formatTimestamp(String(activeEHR.time_created?.value ?? activeEHR.time_created))}
                       </p>
                     </div>
                   )}
@@ -323,7 +324,7 @@ export function EHRPage() {
                         </p>
                       )}
                       {e.timeCreated && (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{e.timeCreated}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{formatTimestamp(e.timeCreated)}</p>
                       )}
                     </li>
                   ))}
