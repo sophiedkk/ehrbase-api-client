@@ -11,6 +11,7 @@ import { useServerConfig } from '../context/ServerConfigContext'
 import { useActiveEHR } from '../context/ActiveEHRContext'
 import { createApiClient, formatError } from '../api/client'
 import { formatTimestamp } from '../utils/date'
+import { TableScroller } from '../components/shared/TableScroller'
 import { runAql, type AqlResult } from '../api/aql'
 import {
   listStoredQueries,
@@ -296,7 +297,7 @@ export function AqlPage() {
                 {rows.length === 0 ? (
                   <p className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">No rows returned.</p>
                 ) : (
-                  <div className="overflow-x-auto">
+                  <TableScroller>
                     <table className="w-full text-sm">
                       <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 sticky top-0">
                         <tr>
@@ -340,7 +341,7 @@ export function AqlPage() {
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </TableScroller>
                 )}
                 <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
                   <JsonViewer data={result} title="Raw response" defaultCollapsed />

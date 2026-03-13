@@ -7,6 +7,7 @@ import { useServerConfig } from '../context/ServerConfigContext'
 import { createApiClient } from '../api/client'
 import { listTemplates } from '../api/template'
 import { formatTimestamp } from '../utils/date'
+import { TableScroller } from '../components/shared/TableScroller'
 
 export function Dashboard() {
   const { config } = useServerConfig()
@@ -124,7 +125,7 @@ export function Dashboard() {
             <CardTitle>Recent Templates</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
+            <TableScroller>
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
@@ -156,7 +157,7 @@ export function Dashboard() {
                   ))}
               </tbody>
             </table>
-            </div>
+            </TableScroller>
           </CardContent>
         </Card>
       )}
