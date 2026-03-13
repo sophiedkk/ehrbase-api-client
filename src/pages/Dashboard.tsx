@@ -6,6 +6,8 @@ import { Badge } from '../components/ui/Badge'
 import { useServerConfig } from '../context/ServerConfigContext'
 import { createApiClient } from '../api/client'
 import { listTemplates } from '../api/template'
+import { runAql } from '../api/aql'
+import { listStoredQueries } from '../api/storedQuery'
 import { formatTimestamp } from '../utils/date'
 import { TableScroller } from '../components/shared/TableScroller'
 
@@ -23,6 +25,36 @@ export function Dashboard() {
     retry: false,
   })
 
+  const { data: ehrCount } = useQuery({
+    queryKey: ['ehr-count', config.baseUrl],
+    queryFn: async () => {
+      const res = await runAql(client, 'SELECT COUNT(e/ehr_id/value) FROM EHR e')
+      return (res.rows[0]?.[0] as number) ?? 0
+    },
+    enabled: !isError,
+    retry: false,
+  })
+
+  const { data: compositionCount } = useQuery({
+    queryKey: ['composition-count', config.baseUrl],
+    queryFn: async () => {
+      const res = await runAql(client, 'SELECT COUNT(c/uid/value) FROM EHR e CONTAINS COMPOSITION c')
+      return (res.rows[0]?.[0] as number) ?? 0
+    },
+    enabled: !isError,
+    retry: false,
+  })
+
+  const { data: storedQueryCount } = useQuery({
+    queryKey: ['stored-query-count', config.baseUrl],
+    queryFn: async () => {
+      const res = await listStoredQueries(client)
+      return res.length
+    },
+    enabled: !isError,
+    retry: false,
+  })
+
   const serverStatus = isLoading ? 'checking' : isError ? 'offline' : 'online'
 
   return (
@@ -33,10 +65,10 @@ export function Dashboard() {
       />
 
       {/* Server status */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Link to="/settings" className="block h-full">
           <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
-            <CardContent className="flex items-center gap-4 py-5">
+            <CardContent className="flex items-start gap-4 py-5">
               <div className="flex-1">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Server Status</p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 capitalize">{serverStatus}</p>
@@ -58,7 +90,7 @@ export function Dashboard() {
 
         <Link to="/templates" className="block h-full">
           <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
-            <CardContent className="flex items-center gap-4 py-5">
+            <CardContent className="flex items-start gap-4 py-5">
               <div className="flex-1">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Templates</p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -70,9 +102,51 @@ export function Dashboard() {
           </Card>
         </Link>
 
+        <Link to="/ehr" className="block h-full">
+          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
+            <CardContent className="flex items-start gap-4 py-5">
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total EHRs</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {ehrCount ?? '…'}
+                </p>
+              </div>
+              <span className="text-2xl">👤</span>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link to="/compositions" className="block h-full">
+          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
+            <CardContent className="flex items-start gap-4 py-5">
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total Compositions</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {compositionCount ?? '…'}
+                </p>
+              </div>
+              <span className="text-2xl">📋</span>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link to="/aql" className="block h-full">
+          <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
+            <CardContent className="flex items-start gap-4 py-5">
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Stored Queries</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {storedQueryCount ?? '…'}
+                </p>
+              </div>
+              <span className="text-2xl">🔎</span>
+            </CardContent>
+          </Card>
+        </Link>
+
         <Link to="/settings" className="block h-full">
           <Card className="h-full hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
-            <CardContent className="flex items-center gap-4 py-5">
+            <CardContent className="flex items-start gap-4 py-5">
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Server URL</p>
                 <p className="text-xs font-mono text-gray-700 dark:text-gray-300 truncate">{config.baseUrl}</p>

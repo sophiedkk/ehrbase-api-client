@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 
 interface LayoutProps {
@@ -23,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
           >
             ☰
           </button>
-          <span className="text-white font-semibold text-sm">EHRBase Client</span>
+          <Link to="/" className="text-white font-semibold text-sm hover:text-gray-300 transition-colors">EHRBase Client</Link>
         </header>
 
         <main className="flex-1 overflow-auto">
