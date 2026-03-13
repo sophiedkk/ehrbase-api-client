@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useLayoutEffect, type ReactNode } from 'react'
+import { useRef, useState, useLayoutEffect, useEffect, type ReactNode } from 'react'
 
 export function TableScroller({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -12,12 +12,7 @@ export function TableScroller({ children }: { children: ReactNode }) {
     setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
   }
 
-  // No dependency array — runs synchronously after every render, before paint.
-  // This reliably catches overflow caused by parent re-renders (e.g. data loading in),
-  // in both dev and production builds.
-  useLayoutEffect(() => {
-    update()
-  })
+  useLayoutEffect(() => { update() })
 
   useEffect(() => {
     const el = ref.current
@@ -32,15 +27,13 @@ export function TableScroller({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative">
-      {showLeft && (
-        <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white dark:from-gray-800 to-transparent z-10 pointer-events-none" />
-      )}
+      <div className={`absolute left-0 inset-y-0 w-8 pointer-events-none z-10 transition-opacity duration-150 ${showLeft ? 'opacity-100' : 'opacity-0'}`}
+        style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.08), transparent)' }} />
       <div ref={ref} className="overflow-x-auto">
         {children}
       </div>
-      {showRight && (
-        <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white dark:from-gray-800 to-transparent z-10 pointer-events-none" />
-      )}
+      <div className={`absolute right-0 inset-y-0 w-8 pointer-events-none z-10 transition-opacity duration-150 ${showRight ? 'opacity-100' : 'opacity-0'}`}
+        style={{ background: 'linear-gradient(to left, rgba(0,0,0,0.08), transparent)' }} />
     </div>
   )
 }

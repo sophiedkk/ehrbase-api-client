@@ -1,5 +1,7 @@
 # EHRBase Client
 
+**[Live demo](https://sophiedkk.github.io/ehrbase-api-client/)**
+
 A web-based client for [EHRBase](https://ehrbase.org), an open-source openEHR Clinical Data Repository. Manage EHRs, templates, and compositions, and run AQL queries — all from your browser.
 
 ## Features
