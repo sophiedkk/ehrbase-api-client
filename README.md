@@ -9,15 +9,16 @@ A web-based client for [EHRBase](https://ehrbase.org), an open-source openEHR Cl
 - **Composition Management** — post compositions in JSON, STRUCTURED, FLAT, or XML format; retrieve and list compositions per EHR
 - **AQL Queries** — run Archetype Query Language queries with a built-in editor, view tabular results, and save/version queries on the server
 - **Active context** — the selected EHR and composition are remembered across pages and persisted in `localStorage`
-- **Dark mode** — system preference is detected automatically, with a manual toggle
-- **Configurable server** — point the client at any EHRBase instance via the Settings page
+- **Dark mode** — follows system preference automatically, with a manual toggle override
+- **Mobile-friendly** — responsive layout with a slide-in sidebar drawer on small screens
+- **Configurable server** — point the client at any EHRBase instance via the Settings page; defaults to the EHRBase Cloud sandbox
 
 ## Getting started
 
 ### Prerequisites
 
 - Node.js 18+
-- A running EHRBase instance (see [EHRBase Docker quickstart](https://ehrbase.org/get-started))
+- Access to an EHRBase instance — the app defaults to the [EHRBase Cloud sandbox](https://sandbox.ehrbase.org) so no local setup is required to get started
 
 ### Install and run
 
@@ -26,18 +27,16 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). The dev server proxies `/ehrbase` to `http://localhost:8080` by default, matching a standard local EHRBase Docker setup.
+Open [http://localhost:5173](http://localhost:5173). The dev server proxies `/ehrbase` to `http://localhost:8080` if you want to use a local EHRBase instance.
 
 ### Configure the server
 
 Go to **Settings** and enter your EHRBase base URL, username, and password. Use **Test Connection** to verify. Settings are saved in `localStorage`.
 
-Common URLs:
-
 | Setup | URL |
 |---|---|
-| Default Docker | `http://localhost:8080/ehrbase/rest/openehr/v1` |
 | EHRBase Cloud sandbox | `https://sandbox.ehrbase.org/ehrbase/rest/openehr/v1` |
+| Default Docker | `http://localhost:8080/ehrbase/rest/openehr/v1` |
 
 ## Deployment
 
