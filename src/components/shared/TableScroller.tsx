@@ -15,12 +15,23 @@ export function TableScroller({ children }: { children: ReactNode }) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    update()
+
+    // rAF ensures layout is fully calculated before the first check
+    const rafId = requestAnimationFrame(update)
+
     el.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update, { passive: true })
+
+    // Observe both the container and its content (the table) so any
+    // size change — container narrowing or table widening — triggers a check
     const ro = new ResizeObserver(update)
     ro.observe(el)
+    if (el.firstElementChild) ro.observe(el.firstElementChild)
+
     return () => {
+      cancelAnimationFrame(rafId)
       el.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
       ro.disconnect()
     }
   }, [])
