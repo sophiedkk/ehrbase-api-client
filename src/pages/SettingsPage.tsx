@@ -6,8 +6,7 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Alert } from '../components/ui/Alert'
 import { useServerConfig } from '../context/ServerConfigContext'
-import { createApiClient, formatError } from '../api/client'
-import { listTemplates } from '../api/template'
+import { pingServer, formatError } from '../api/client'
 import type { ServerConfig } from '../types/openehr'
 
 export function SettingsPage() {
@@ -16,7 +15,7 @@ export function SettingsPage() {
   const [saved, setSaved] = useState(false)
 
   const testMutation = useMutation({
-    mutationFn: () => listTemplates(createApiClient(form)),
+    mutationFn: () => pingServer(form),
   })
 
   function handleSave() {
@@ -42,10 +41,10 @@ export function SettingsPage() {
           <CardContent className="space-y-4">
             <Input
               label="Base URL"
-              placeholder="http://localhost:8080/ehrbase/rest/openehr/v1"
+              placeholder="http://localhost:8080/ehrbase"
               value={form.baseUrl}
               onChange={(e) => handleChange('baseUrl', e.target.value)}
-              hint="The full path to the openEHR REST API v1 endpoint"
+              hint="The EHRbase server root (e.g. http://localhost:8080/ehrbase)"
             />
             <Input
               label="Username"
@@ -82,7 +81,7 @@ export function SettingsPage() {
             )}
             {testMutation.isSuccess && (
               <Alert variant="success" onDismiss={() => testMutation.reset()}>
-                Connected successfully! Found {testMutation.data?.length ?? 0} template(s).
+                Connected successfully!
               </Alert>
             )}
           </CardContent>
@@ -94,11 +93,8 @@ export function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             {[
-              { label: 'Default Docker', url: 'http://localhost:8080/ehrbase/rest/openehr/v1' },
-              {
-                label: 'EHRbase cloud',
-                url: 'https://sandbox.ehrbase.org/ehrbase/rest/openehr/v1',
-              },
+              { label: 'Default Docker', url: 'http://localhost:8080/ehrbase' },
+              { label: 'EHRbase cloud', url: 'https://sandbox.ehrbase.org/ehrbase' },
             ].map(({ label, url }) => (
               <div
                 key={url}

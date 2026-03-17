@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { PageHeader } from '../components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
@@ -10,16 +10,9 @@ import { AqlEditor } from '../components/shared/AqlEditor'
 import { useServerConfig } from '../context/ServerConfigContext'
 import { useActiveEHR } from '../context/ActiveEHRContext'
 import { createApiClient, formatError } from '../api/client'
-import { formatTimestamp } from '../utils/date'
 import { TableScroller } from '../components/shared/TableScroller'
 import { runAql, type AqlResult } from '../api/aql'
-import {
-  listStoredQueries,
-  getStoredQueryVersions,
-  getStoredQuery,
-  saveStoredQuery,
-  type StoredQuery,
-} from '../api/storedQuery'
+import { listStoredQueries, getStoredQuery, type StoredQuery } from '../api/storedQuery'
 
 const EXAMPLE_QUERIES = [
   {
@@ -97,19 +90,10 @@ export function AqlPage() {
   const { config } = useServerConfig()
   const { activeEHR } = useActiveEHR()
   const client = createApiClient(config)
-  const qc = useQueryClient()
 
   const [query, setQuery] = useState(EXAMPLE_QUERIES[0].q)
   const [result, setResult] = useState<AqlResult | null>(null)
 
-  // Save form
-  const [showSaveForm, setShowSaveForm] = useState(false)
-  const [saveName, setSaveName] = useState('')
-  const [saveVersion, setSaveVersion] = useState('')
-
-  // Versions panel
-  const [selectedQuery, setSelectedQuery] = useState<StoredQuery | null>(null)
-  const [newVersionInput, setNewVersionInput] = useState('')
 
   const {
     data: storedQueries = [],
@@ -122,14 +106,7 @@ export function AqlPage() {
     retry: false,
   })
 
-  const { data: versions = [], isFetching: isVersionsFetching } = useQuery({
-    queryKey: ['storedQueryVersions', config.baseUrl, selectedQuery?.name],
-    queryFn: () => getStoredQueryVersions(client, selectedQuery!.name),
-    enabled: !!selectedQuery,
-    retry: false,
-  })
-
-  const runMutation = useMutation({
+const runMutation = useMutation({
     mutationFn: () => runAql(client, query),
     onSuccess: (data) => setResult(data),
   })
@@ -140,19 +117,7 @@ export function AqlPage() {
     onSuccess: (sq) => loadQuery(sq.q),
   })
 
-  const saveMutation = useMutation({
-    mutationFn: ({ name, q, version }: { name: string; q: string; version?: string }) =>
-      saveStoredQuery(client, name, q, version || undefined),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['storedQueries'] })
-      if (selectedQuery) qc.invalidateQueries({ queryKey: ['storedQueryVersions'] })
-      setShowSaveForm(false)
-      setSaveName('')
-      setSaveVersion('')
-    },
-  })
-
-  function fillActiveEhr(q: string) {
+function fillActiveEhr(q: string) {
     return activeEHR ? q.replace('{EHR_ID}', activeEHR.ehr_id.value) : q
   }
 
@@ -187,13 +152,6 @@ export function AqlPage() {
                 <CardTitle>Query Editor</CardTitle>
                 <div className="flex gap-2">
                   <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setShowSaveForm((v) => !v)}
-                  >
-                    {showSaveForm ? 'Cancel' : 'Store Query'}
-                  </Button>
-                  <Button
                     onClick={() => runMutation.mutate()}
                     loading={runMutation.isPending}
                     disabled={!query.trim()}
@@ -221,58 +179,6 @@ export function AqlPage() {
                 }}
               />
 
-              {showSaveForm && (
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 p-4 space-y-3">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Store Query</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                        Qualified Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        autoFocus
-                        placeholder="e.g. org.example::find_all_ehrs"
-                        value={saveName}
-                        onChange={(e) => setSaveName(e.target.value)}
-                        className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <p className="text-xs text-gray-400 dark:text-gray-500">[namespace::] query-name</p>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                        Version (optional)
-                      </label>
-                      <input
-                        placeholder="e.g. 1.0.0"
-                        value={saveVersion}
-                        onChange={(e) => setSaveVersion(e.target.value)}
-                        className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <p className="text-xs text-gray-400 dark:text-gray-500">SEMVER — omit to auto-version</p>
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    disabled={!saveName.trim()}
-                    loading={saveMutation.isPending}
-                    onClick={() =>
-                      saveMutation.mutate({ name: saveName.trim(), q: query, version: saveVersion.trim() })
-                    }
-                  >
-                    Store
-                  </Button>
-                  {saveMutation.isError && (
-                    <Alert variant="error" onDismiss={() => saveMutation.reset()}>
-                      {formatError(saveMutation.error)}
-                    </Alert>
-                  )}
-                  {saveMutation.isSuccess && (
-                    <Alert variant="success" onDismiss={() => saveMutation.reset()}>
-                      Query stored successfully.
-                    </Alert>
-                  )}
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -395,85 +301,16 @@ export function AqlPage() {
               )}
               <ul className="divide-y divide-gray-100 dark:divide-gray-700">
                 {uniqueQueries.map((sq) => (
-                  <li
-                    key={sq.name}
-                    className={`px-4 py-3 transition-colors ${selectedQuery?.name === sq.name ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <button
-                        className="flex-1 min-w-0 text-left"
-                        onClick={() => loadStoredMutation.mutate({ name: sq.name, version: sq.version })}
-                      >
-                        <p className="text-sm text-gray-800 dark:text-gray-100 truncate font-medium" title={sq.name}>
-                          {sq.name}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">v{sq.version}</p>
-                      </button>
-                      <button
-                        className="shrink-0 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mt-0.5"
-                        title="Show versions"
-                        onClick={() =>
-                          setSelectedQuery((prev) => (prev?.name === sq.name ? null : sq))
-                        }
-                      >
-                        {selectedQuery?.name === sq.name ? '▲' : '▼'}
-                      </button>
-                    </div>
-
-                    {/* Expanded: versions list */}
-                    {selectedQuery?.name === sq.name && (
-                      <div className="mt-3 space-y-2" onClick={(e) => e.stopPropagation()}>
-                        {isVersionsFetching ? (
-                          <p className="text-xs text-gray-400 dark:text-gray-500">Loading versions…</p>
-                        ) : (
-                          <ul className="space-y-1">
-                            {versions.map((v) => (
-                              <li
-                                key={v.version}
-                                className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-700 px-3 py-2"
-                              >
-                                <div className="min-w-0">
-                                  <span className="text-xs font-mono text-gray-700 dark:text-gray-300">
-                                    v{v.version}
-                                  </span>
-                                  {v.saved && (
-                                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
-                                      {formatTimestamp(v.saved)}
-                                    </p>
-                                  )}
-                                </div>
-                                <button
-                                  onClick={() => loadStoredMutation.mutate({ name: sq.name, version: v.version })}
-                                  className="shrink-0 text-xs text-blue-600 hover:text-blue-800 font-medium"
-                                >
-                                  Load
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        <div className="flex gap-2 items-center pt-1">
-                          <input
-                            placeholder="New version (e.g. 1.0.1)"
-                            value={newVersionInput}
-                            onChange={(e) => setNewVersionInput(e.target.value)}
-                            className="flex-1 min-w-0 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <button
-                            onClick={() => {
-                              saveMutation.mutate(
-                                { name: sq.name, q: query, version: newVersionInput.trim() },
-                                { onSuccess: () => setNewVersionInput('') }
-                              )
-                            }}
-                            disabled={saveMutation.isPending || !newVersionInput.trim()}
-                            className="shrink-0 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium disabled:opacity-40"
-                          >
-                            Store version
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                  <li key={sq.name} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <button
+                      className="w-full text-left px-4 py-3"
+                      onClick={() => loadStoredMutation.mutate({ name: sq.name, version: sq.version })}
+                    >
+                      <p className="text-sm text-gray-800 dark:text-gray-100 truncate font-medium" title={sq.name}>
+                        {sq.name}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">v{sq.version}</p>
+                    </button>
                   </li>
                 ))}
               </ul>

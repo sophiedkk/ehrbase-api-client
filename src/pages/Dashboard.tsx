@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { useServerConfig } from '../context/ServerConfigContext'
-import { createApiClient } from '../api/client'
+import { createApiClient, isServerOnline } from '../api/client'
 import { listTemplates } from '../api/template'
 import { runAql } from '../api/aql'
 import { listStoredQueries } from '../api/storedQuery'
@@ -12,14 +13,24 @@ import { formatTimestamp } from '../utils/date'
 import { TableScroller } from '../components/shared/TableScroller'
 
 export function Dashboard() {
+  const [showWarning, setShowWarning] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setShowWarning(false), 5000)
+    return () => clearTimeout(t)
+  }, [])
+
   const { config } = useServerConfig()
   const client = createApiClient(config)
 
-  const {
-    data: templates,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: isOnline, isLoading: statusLoading } = useQuery({
+    queryKey: ['server-status', config.baseUrl],
+    queryFn: () => isServerOnline(config),
+    retry: false,
+  })
+
+  const serverStatus = statusLoading ? 'checking' : isOnline ? 'online' : 'offline'
+
+  const { data: templates, isLoading: templatesLoading } = useQuery({
     queryKey: ['templates', config.baseUrl],
     queryFn: () => listTemplates(client),
     retry: false,
@@ -31,7 +42,7 @@ export function Dashboard() {
       const res = await runAql(client, 'SELECT COUNT(e/ehr_id/value) FROM EHR e')
       return (res.rows[0]?.[0] as number) ?? 0
     },
-    enabled: !isError,
+    enabled: isOnline,
     retry: false,
   })
 
@@ -41,7 +52,7 @@ export function Dashboard() {
       const res = await runAql(client, 'SELECT COUNT(c/uid/value) FROM EHR e CONTAINS COMPOSITION c')
       return (res.rows[0]?.[0] as number) ?? 0
     },
-    enabled: !isError,
+    enabled: isOnline,
     retry: false,
   })
 
@@ -51,11 +62,9 @@ export function Dashboard() {
       const res = await listStoredQueries(client)
       return res.length
     },
-    enabled: !isError,
+    enabled: isOnline,
     retry: false,
   })
-
-  const serverStatus = isLoading ? 'checking' : isError ? 'offline' : 'online'
 
   return (
     <div>
@@ -63,6 +72,21 @@ export function Dashboard() {
         title="Dashboard"
         description="Overview of your EHRBase server connection and resources"
       />
+
+      {/* Vibe warning */}
+      {showWarning && (
+        <div className="mb-6 rounded-lg bg-yellow-50 border border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700 overflow-hidden">
+          <div className="px-4 py-3 text-yellow-800 dark:text-yellow-300 text-sm flex items-center justify-between">
+            <span>⚠️ This app is a vibecode experiment. Use at your own risk.</span>
+            <button onClick={() => setShowWarning(false)} className="ml-4 text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-100 transition-colors">✕</button>
+          </div>
+          <div
+            className="h-0.5 bg-yellow-400 dark:bg-yellow-600 origin-left"
+            style={{ animation: 'shrink 5s linear forwards' }}
+          />
+          <style>{`@keyframes shrink { from { transform: scaleX(1) } to { transform: scaleX(0) } }`}</style>
+        </div>
+      )}
 
       {/* Server status */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -94,7 +118,7 @@ export function Dashboard() {
               <div className="flex-1">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Templates</p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {isLoading ? '…' : (templates?.length ?? 0)}
+                  {templatesLoading ? '…' : (templates?.length ?? 0)}
                 </p>
               </div>
               <span className="text-2xl">📄</span>

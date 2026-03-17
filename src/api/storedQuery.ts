@@ -32,16 +32,3 @@ export async function getStoredQuery(
   return res.data
 }
 
-export async function saveStoredQuery(
-  client: AxiosInstance,
-  name: string,
-  query: string,
-  version?: string
-): Promise<void> {
-  const path = version
-    ? `/definition/query/${encodeURIComponent(name)}/${encodeURIComponent(version)}`
-    : `/definition/query/${encodeURIComponent(name)}`
-  await client.put(path, query, {
-    headers: { 'Content-Type': 'text/plain' },
-  })
-}

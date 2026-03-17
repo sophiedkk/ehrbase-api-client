@@ -3,7 +3,7 @@ import type { ServerConfig } from '../types/openehr'
 
 export function createApiClient(config: ServerConfig) {
   return axios.create({
-    baseURL: config.baseUrl,
+    baseURL: `${config.baseUrl}/rest/openehr/v1`,
     auth: {
       username: config.username,
       password: config.password,
@@ -12,6 +12,22 @@ export function createApiClient(config: ServerConfig) {
       Accept: 'application/json',
     },
   })
+}
+
+export async function pingServer(config: ServerConfig): Promise<void> {
+  await axios.get(`${config.baseUrl}/rest/status`, {
+    auth: { username: config.username, password: config.password },
+    timeout: 5000,
+  })
+}
+
+export async function isServerOnline(config: ServerConfig): Promise<boolean> {
+  try {
+    await pingServer(config)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function formatError(err: unknown): string {
